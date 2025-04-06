@@ -5,17 +5,17 @@ import Image from 'next/image';
 export default function Navbar() {
   return (
     <nav className='bg-[#2d303c] flex items-center justify-between py-2 w-full transition-colors duration-200 relative h-[10vh]'>
-      <div className='flex items-center'>
-        <div className='absolute top-[-50px]'>
+      <div className='w-full flex items-center justify-between px-[3vw]'>
+        <div className='w-[80px] sm:w-[150px]'>
           <Image
-            src='/logo.png'
+            src='/notescafe-Logo.png'
             alt='Logo'
             width='220'
             height='220'
             className=''
           />
         </div>
-        <div className='xl:pl-[60vw] md:pl-[50vw] sm:pl-[30vw] pl-[200px] flex w-[100vw] justify-between items-center px-[3vw]'>
+        <div className='flex items-center gap-[2vw]'>
           <div>
             <Searching />
           </div>
