@@ -4,8 +4,7 @@ import Navbar from "@/Components/layout/Navbar/Navbar";
 export default function Page() {
   return (
     <main>
-      <Navbar />
-      <Footer />
+      <h1>Hero section</h1>
     </main>
   );
 }
