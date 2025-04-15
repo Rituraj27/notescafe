@@ -7,3 +7,38 @@
     color-scheme: dark;
   }
 }
+@font-face {
+  font-family: 'Extenda';
+  src: url('/fonts/extenda-20-micro.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Extenda50Omega';
+  src: url('/fonts/extenda-50-mega.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Extenda30Deca';
+  src: url('/fonts/extenda-30-deca.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Extenda10Pica';
+  src: url('/fonts/extenda-10-pica.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Extenda90Exa';
+  src: url('/fonts/extenda-90-exa.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
