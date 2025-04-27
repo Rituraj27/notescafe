@@ -19,7 +19,7 @@ export default function NoteDetailPage({ params }) {
     }
 
     return db.collection('notes').findOne({
-      _id: ObjectId.createFromHexString(id),
+      _id: new ObjectId(id),
     });
   };
 
@@ -34,7 +34,7 @@ export default function NoteDetailPage({ params }) {
 
   return (
     <main className='max-w-4xl mx-auto p-6'>
-      <h1 className='text-3xl font-bold mb-4 text-black'>{note.title}</h1>
+      <h1 className='text-3xl font-bold mb-4'>{note.title}</h1>
       <div className='relative w-full h-[400px] mb-6'>
         <Image
           src={note.image || '/placeholder.jpg'}
