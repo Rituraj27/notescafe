@@ -5,6 +5,8 @@ import Searching from '@/Components/ui/Searching/Searching';
 import ThemeToggle from '@/Components/ui/ThemeToggle/ThemeToggle';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import Login from '@/Components/ui/Login/Login';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { theme } = useTheme();
@@ -19,6 +21,7 @@ export default function Navbar() {
     if (!isScrolled) return 'rgba(0, 0, 0, 0)';
     return theme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 245, .6)';
   };
+  const router = useRouter();
 
   return (
     <motion.nav
@@ -32,18 +35,22 @@ export default function Navbar() {
       className='fixed top-0 z-50 flex items-center justify-between py-2 w-full h-[10vh]'
     >
       <div className='w-full flex items-center justify-between px-[3vw]'>
-        <div className='w-[80px] sm:w-[150px]'>
+        <div className='w-[80px] sm:w-[150px] cursor-pointer'>
           <Image
             src='/notescafe-Logo.png'
             alt='Logo'
             width='220'
             height='220'
             className=''
+            onClick={() => router.push('/')}
           />
         </div>
         <div className='flex items-center gap-[2vw]'>
           <div>
             <Searching />
+          </div>
+          <div>
+            <Login />
           </div>
           <div>
             <ThemeToggle />
