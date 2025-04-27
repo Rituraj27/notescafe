@@ -1,6 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import Image from "next/image";
 import { BSON } from "mongodb"; // modern import
+import Link from "next/link"; // not needed but nice to have
 
 export default async function NoteDetailPage({ params }) {
   const client = await clientPromise;
@@ -22,6 +23,7 @@ export default async function NoteDetailPage({ params }) {
   return (
     <main className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">{note.title}</h1>
+
       <div className="relative w-full h-[400px] mb-6">
         <Image
           src={note.image || "/placeholder.jpg"}
@@ -30,10 +32,23 @@ export default async function NoteDetailPage({ params }) {
           className="object-cover rounded-xl"
         />
       </div>
+
       <p className="text-lg text-gray-800 dark:text-gray-200 mb-4">
         {note.description || "No description available."}
       </p>
-      <p className="text-xl font-semibold">₹{note.price}</p>
+
+      <p className="text-xl font-semibold mb-6">₹{note.price}</p>
+
+      {/* Download Button */}
+      {note.file_path && (
+        <a
+          href={note.file_path}
+          download
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition"
+        >
+          Download Note
+        </a>
+      )}
     </main>
   );
 }
