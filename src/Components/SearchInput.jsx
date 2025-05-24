@@ -47,7 +47,7 @@ export default function SearchInput() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          className="w-full p-3 border rounded-md"
+          className="w-full p-1 border rounded-l-md"
           placeholder="Search notes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -61,7 +61,7 @@ export default function SearchInput() {
             <li
               key={suggestion._id}
               onClick={() => handleSelect(suggestion.title)}
-              className="p-3 hover:bg-gray-100 cursor-pointer"
+              className="p-3 text-black hover:bg-gray-100 cursor-pointer"
             >
               {suggestion.title}
             </li>
