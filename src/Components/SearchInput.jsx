@@ -47,7 +47,7 @@ export default function SearchInput() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          className="w-full p-3 border rounded-md"
+          className="w-full p-1 px-2 border rounded-l-3xl"
           placeholder="Search notes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
