@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 // import SearchInput from "@/components/SearchInput";
-import SearchInput from "@/Components/SearchInput";
+import SearchInput from "@/Components/ui/SearchInput/SearchInput";
 
 export default function Searching() {
   const { theme } = useTheme();
