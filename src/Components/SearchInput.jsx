@@ -1,12 +1,12 @@
-"use client"; // since we'll use hooks
+'use client'; // since we'll use hooks
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import debounce from "lodash.debounce"; // we'll use lodash debounce (very clean!)
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import debounce from 'lodash.debounce'; // we'll use lodash debounce (very clean!)
 
 export default function SearchInput() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const router = useRouter();
 
@@ -43,12 +43,12 @@ export default function SearchInput() {
   };
 
   return (
-    <div className="relative w-full max-w-xl mx-auto">
+    <div className='relative w-full max-w-xl mx-auto'>
       <form onSubmit={handleSubmit}>
         <input
-          type="text"
-          className="w-full p-1 border rounded-l-md"
-          placeholder="Search notes..."
+          type='text'
+          className=' p-2 rounded-l-3xl md:w-[350px] sm:w-[150px] w-[90px] h-[34px] relative z-10 focus:outline-none focus:border-sky-600 pl-4 text-xs placeholder:text-[8px] sm:placeholder:text-[15px] border '
+          placeholder='Search notes...'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -56,12 +56,12 @@ export default function SearchInput() {
 
       {/* Suggestions Dropdown */}
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border w-full mt-2 rounded-md shadow-lg z-50">
+        <ul className='absolute bg-white border w-full mt-2 rounded-md shadow-lg z-50'>
           {suggestions.map((suggestion) => (
             <li
               key={suggestion._id}
               onClick={() => handleSelect(suggestion.title)}
-              className="p-3 text-black hover:bg-gray-100 cursor-pointer"
+              className='p-3 text-black hover:bg-gray-100 cursor-pointer'
             >
               {suggestion.title}
             </li>
