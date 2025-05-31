@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { use } from 'react';
+import Image from 'next/image';
 
 export default function EditNote({ params }) {
   // Properly unwrap params
@@ -23,6 +24,8 @@ export default function EditNote({ params }) {
   const [loading, setLoading] = useState(!isNewNote);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState('');
 
   useEffect(() => {
     // If creating a new note, no need to fetch data
@@ -113,6 +116,43 @@ export default function EditNote({ params }) {
         console.error('Error deleting note:', error);
         setError('Error deleting note');
       }
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target.result);
+        setFormData((prev) => ({ ...prev, image: e.target.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target.result);
+        setFormData((prev) => ({ ...prev, image: e.target.result }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -219,33 +259,88 @@ export default function EditNote({ params }) {
               htmlFor='image'
               className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
             >
-              Image URL
+              Image
             </label>
-            <input
-              type='text'
-              id='image'
-              name='image'
-              value={formData.image}
-              onChange={handleChange}
-              placeholder='/placeholder.jpg'
-              className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
-            />
-            {formData.image && (
-              <div className='mt-2'>
-                <p className='text-sm text-gray-500 dark:text-gray-400 mb-1'>
-                  Preview:
-                </p>
-                <img
-                  src={formData.image}
-                  alt='Preview'
-                  className='w-40 h-40 object-cover rounded-md'
-                  onError={(e) => {
-                    e.target.src = '/placeholder.jpg';
-                    e.target.onerror = null;
-                  }}
-                />
-              </div>
-            )}
+            <div
+              className={`relative border-2 border-dashed rounded-lg p-6 text-center ${
+                isDragging
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                  : 'border-gray-300 dark:border-gray-600'
+              } transition-colors duration-200`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <input
+                type='file'
+                id='image'
+                name='image'
+                accept='image/*'
+                onChange={handleFileChange}
+                className='hidden'
+              />
+              <label htmlFor='image' className='cursor-pointer block'>
+                {previewUrl ? (
+                  <div className='relative w-40 h-40 mx-auto'>
+                    <Image
+                      src={previewUrl}
+                      alt='Preview'
+                      width={100}
+                      height={100}
+                      className='w-full h-full object-cover rounded-md'
+                    />
+                    <button
+                      type='button'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPreviewUrl('');
+                        setFormData((prev) => ({ ...prev, image: '' }));
+                      }}
+                      className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600'
+                    >
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        className='h-4 w-4'
+                        viewBox='0 0 20 20'
+                        fill='currentColor'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div className='space-y-2'>
+                    <svg
+                      className='mx-auto h-12 w-12 text-gray-400'
+                      stroke='currentColor'
+                      fill='none'
+                      viewBox='0 0 48 48'
+                      aria-hidden='true'
+                    >
+                      <path
+                        d='M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02'
+                        strokeWidth={2}
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                    <div className='text-sm text-gray-600 dark:text-gray-400'>
+                      <span className='font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500'>
+                        Click to upload
+                      </span>{' '}
+                      or drag and drop
+                    </div>
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      PNG, JPG, GIF up to 10MB
+                    </p>
+                  </div>
+                )}
+              </label>
+            </div>
           </div>
 
           <div className='flex justify-end'>
