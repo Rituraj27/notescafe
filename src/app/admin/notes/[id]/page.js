@@ -72,7 +72,6 @@ export default function EditNote({ params }) {
 
     try {
       const url = isNewNote ? '/api/admin/notes' : `/api/admin/notes/${id}`;
-
       const method = isNewNote ? 'POST' : 'PUT';
 
       const response = await fetch(url, {
@@ -129,31 +128,81 @@ export default function EditNote({ params }) {
     setIsDragging(false);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     setIsDragging(false);
 
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewUrl(e.target.result);
-        setFormData((prev) => ({ ...prev, image: e.target.result }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        setSaving(true);
+        setError('');
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Upload to our API
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Upload failed');
+        }
+
+        setFormData((prev) => ({ ...prev, image: data.url }));
+        setPreviewUrl(data.url);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setError(error.message || 'Failed to upload image');
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewUrl(e.target.result);
-        setFormData((prev) => ({ ...prev, image: e.target.result }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        setSaving(true);
+        setError('');
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Upload to our API
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Upload failed');
+        }
+
+        setFormData((prev) => ({ ...prev, image: data.url }));
+        setPreviewUrl(data.url);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setError(error.message || 'Failed to upload image');
+      } finally {
+        setSaving(false);
+      }
     }
+  };
+
+  const handleUploadSuccess = (result) => {
+    console.log('Upload result:', result);
+    setFormData((prev) => ({ ...prev, image: result.info.secure_url }));
+    setPreviewUrl(result.info.secure_url);
   };
 
   if (loading) {
@@ -285,9 +334,10 @@ export default function EditNote({ params }) {
                     <Image
                       src={previewUrl}
                       alt='Preview'
-                      width={100}
-                      height={100}
-                      className='w-full h-full object-cover rounded-md'
+                      fill
+                      sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                      className='object-cover rounded-md'
+                      priority
                     />
                     <button
                       type='button'
