@@ -24,7 +24,6 @@ export default function NoteCard({ note }) {
             <div className='text-gray-600 text-sm'>
               {note.author || 'Unknown'}
             </div>
-            <div className='font-bold text-[#981d12]'>₹{note.price}</div>
           </div>
         </div>
       </div>

@@ -5,25 +5,23 @@ export async function middleware(request) {
   const path = request.nextUrl.pathname;
 
   // Define which paths are protected admin routes
-  const isAdminPath =
-    path.startsWith('/admin/dashboard') ||
-    path.startsWith('/admin/notes') ||
-    path.startsWith('/admin/users');
+  const isAdminPath = path.startsWith('/admin');
 
   // Define public paths that don't need authentication
-  const isPublicPath = path === '/login';
+  const isPublicPath = path === '/login' || path === '/signup';
 
   const token = await getToken({
     req: request,
-    secret:
-      process.env.NEXTAUTH_SECRET || 'your-fallback-secret-should-be-in-env',
+    secret: process.env.NEXTAUTH_SECRET,
   });
 
   // Redirect logic for admin routes
   if (isAdminPath) {
     // If not logged in, redirect to login
     if (!token) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      const url = new URL('/login', request.url);
+      url.searchParams.set('callbackUrl', path);
+      return NextResponse.redirect(url);
     }
 
     // If user is not an admin, redirect to homepage
@@ -32,7 +30,7 @@ export async function middleware(request) {
     }
   }
 
-  // If already logged in and trying to access login page, redirect based on role
+  // If already logged in and trying to access login/signup page, redirect based on role
   if (isPublicPath && token) {
     if (token.role === 'admin') {
       return NextResponse.redirect(new URL('/admin/dashboard', request.url));
@@ -46,5 +44,5 @@ export async function middleware(request) {
 
 // Configure which paths this middleware applies to
 export const config = {
-  matcher: ['/admin/:path*', '/login'],
+  matcher: ['/admin/:path*', '/login', '/signup'],
 };
