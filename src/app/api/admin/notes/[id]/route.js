@@ -66,11 +66,8 @@ export async function PUT(request, context) {
     const data = await request.json();
 
     // Validate required fields
-    if (!data.title || !data.price) {
-      return NextResponse.json(
-        { error: 'Title and price are required' },
-        { status: 400 }
-      );
+    if (!data.title) {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
     const client = await clientPromise;
@@ -89,13 +86,17 @@ export async function PUT(request, context) {
     const updateData = {
       title: data.title,
       description: data.description || '',
-      price: parseFloat(data.price),
       updatedAt: new Date().toISOString(),
     };
 
     // Only update image if provided
     if (data.image) {
       updateData.image = data.image;
+    }
+
+    // Only update PDF URL if provided
+    if (data.pdfUrl) {
+      updateData.pdfUrl = data.pdfUrl;
     }
 
     await db

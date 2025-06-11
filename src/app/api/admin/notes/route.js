@@ -50,11 +50,8 @@ export async function POST(request) {
     const data = await request.json();
 
     // Validate required fields
-    if (!data.title || !data.price) {
-      return NextResponse.json(
-        { error: 'Title and price are required' },
-        { status: 400 }
-      );
+    if (!data.title) {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
     const client = await clientPromise;
@@ -64,8 +61,8 @@ export async function POST(request) {
     const note = {
       title: data.title,
       description: data.description || '',
-      price: parseFloat(data.price),
       image: data.image || '/placeholder.jpg',
+      pdfUrl: data.pdfUrl || '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

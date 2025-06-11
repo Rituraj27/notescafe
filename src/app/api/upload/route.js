@@ -6,7 +6,7 @@ export async function POST(request) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'admin') {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -14,27 +14,32 @@ export async function POST(request) {
     const file = formData.get('file');
 
     if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Create a new FormData for Cloudinary
+    // Determine if it's a PDF
+    const isPDF = file.type === 'application/pdf';
+
+    // Set the correct folder path
+    const folder = isPDF ? 'notescafe/pdf' : 'notescafe/notes';
+
+    // Create form data for Cloudinary
     const cloudinaryFormData = new FormData();
     cloudinaryFormData.append('file', file);
     cloudinaryFormData.append('upload_preset', 'notescafe');
-    cloudinaryFormData.append('folder', 'notescafe/notes');
+    cloudinaryFormData.append('folder', folder);
 
-    // Log the request details
+    // Log the upload configuration
     console.log('Uploading to Cloudinary:', {
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      uploadPreset: 'notescafe',
-      folder: 'notescafe/notes',
+      folder,
       fileType: file.type,
-      fileSize: file.size,
+      fileName: file.name,
+      isPDF,
     });
 
     // Upload to Cloudinary
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`,
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
         method: 'POST',
         body: cloudinaryFormData,
@@ -52,10 +57,20 @@ export async function POST(request) {
     }
 
     const data = await response.json();
-    console.log('Upload successful:', data.secure_url);
+    console.log('Upload successful:', {
+      url: data.secure_url,
+      resourceType: data.resource_type,
+      format: data.format,
+      public_id: data.public_id,
+    });
+
+    // For PDFs, construct the delivery URL directly
+    const finalUrl = isPDF
+      ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/v${data.version}/${data.public_id}.pdf`
+      : data.secure_url;
 
     return NextResponse.json({
-      url: data.secure_url,
+      url: finalUrl,
       message: 'File uploaded successfully',
     });
   } catch (error) {
