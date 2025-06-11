@@ -17,31 +17,21 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Create a new FormData for Cloudinary
-    const cloudinaryFormData = new FormData();
-    cloudinaryFormData.append('file', file);
-    cloudinaryFormData.append('upload_preset', 'notescafe');
-
     // Determine if it's a PDF
     const isPDF = file.type === 'application/pdf';
 
     // Set the correct folder path
     const folder = isPDF ? 'notescafe/pdf' : 'notescafe/notes';
+
+    // Create form data for Cloudinary
+    const cloudinaryFormData = new FormData();
+    cloudinaryFormData.append('file', file);
+    cloudinaryFormData.append('upload_preset', 'notescafe');
     cloudinaryFormData.append('folder', folder);
-
-    // Set resource type and additional parameters for PDFs
-    const resourceType = isPDF ? 'raw' : 'image';
-    cloudinaryFormData.append('resource_type', resourceType);
-
-    if (isPDF) {
-      cloudinaryFormData.append('access_mode', 'public');
-      cloudinaryFormData.append('type', 'upload');
-    }
 
     // Log the upload configuration
     console.log('Uploading to Cloudinary:', {
       folder,
-      resourceType,
       fileType: file.type,
       fileName: file.name,
       isPDF,
@@ -49,7 +39,7 @@ export async function POST(request) {
 
     // Upload to Cloudinary
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`,
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
         method: 'POST',
         body: cloudinaryFormData,
@@ -76,7 +66,7 @@ export async function POST(request) {
 
     // For PDFs, construct the delivery URL directly
     const finalUrl = isPDF
-      ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload/v1/${data.public_id}`
+      ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/v${data.version}/${data.public_id}.pdf`
       : data.secure_url;
 
     return NextResponse.json({
