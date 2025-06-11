@@ -3,6 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function NoteCard({ note }) {
+  // Function to truncate text to a certain number of words
+  const truncateText = (text, maxWords = 5) => {
+    if (!text) return '';
+    const words = text.split(' ');
+    if (words.length <= maxWords) return text;
+    return words.slice(0, maxWords).join(' ') + '...';
+  };
+
   return (
     <Link href={`/notes/${note._id}`}>
       <div className='relative block rounded-md overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-105'>
@@ -22,7 +30,7 @@ export default function NoteCard({ note }) {
 
           <div className='flex justify-between items-center mt-2'>
             <div className='text-gray-600 text-sm'>
-              {note.author || 'Unknown'}
+              {note.author || truncateText(note.description)}
             </div>
           </div>
         </div>
