@@ -18,8 +18,8 @@ export default function EditNote({ params }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '',
     image: '',
+    pdfUrl: '',
   });
   const [loading, setLoading] = useState(!isNewNote);
   const [saving, setSaving] = useState(false);
@@ -43,8 +43,8 @@ export default function EditNote({ params }) {
         setFormData({
           title: note.title || '',
           description: note.description || '',
-          price: note.price?.toString() || '',
           image: note.image || '',
+          pdfUrl: note.pdfUrl || '',
         });
       } catch (error) {
         console.error('Error fetching note:', error);
@@ -167,7 +167,7 @@ export default function EditNote({ params }) {
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
       try {
         setSaving(true);
         setError('');
@@ -188,11 +188,16 @@ export default function EditNote({ params }) {
           throw new Error(data.error || 'Upload failed');
         }
 
-        setFormData((prev) => ({ ...prev, image: data.url }));
-        setPreviewUrl(data.url);
+        // Check if it's a PDF or image
+        if (file.type === 'application/pdf') {
+          setFormData((prev) => ({ ...prev, pdfUrl: data.url }));
+        } else if (file.type.startsWith('image/')) {
+          setFormData((prev) => ({ ...prev, image: data.url }));
+          setPreviewUrl(data.url);
+        }
       } catch (error) {
         console.error('Error uploading file:', error);
-        setError(error.message || 'Failed to upload image');
+        setError(error.message || 'Failed to upload file');
       } finally {
         setSaving(false);
       }
@@ -287,24 +292,6 @@ export default function EditNote({ params }) {
 
           <div>
             <label
-              htmlFor='price'
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-            >
-              Price (₹) *
-            </label>
-            <input
-              type='number'
-              id='price'
-              name='price'
-              value={formData.price}
-              onChange={handleChange}
-              required
-              className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
-            />
-          </div>
-
-          <div>
-            <label
               htmlFor='image'
               className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
             >
@@ -386,6 +373,88 @@ export default function EditNote({ params }) {
                     </div>
                     <p className='text-xs text-gray-500 dark:text-gray-400'>
                       PNG, JPG, GIF up to 10MB
+                    </p>
+                  </div>
+                )}
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor='pdf'
+              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+            >
+              PDF File
+            </label>
+            <div
+              className={`relative border-2 border-dashed rounded-lg p-6 text-center ${
+                isDragging
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                  : 'border-gray-300 dark:border-gray-600'
+              } transition-colors duration-200`}
+            >
+              <input
+                type='file'
+                id='pdf'
+                name='pdf'
+                accept='.pdf'
+                onChange={handleFileChange}
+                className='hidden'
+              />
+              <label htmlFor='pdf' className='cursor-pointer'>
+                {formData.pdfUrl ? (
+                  <div className='flex items-center justify-center space-x-2 text-blue-600'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='h-6 w-6'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'
+                      />
+                    </svg>
+                    <span>PDF Uploaded</span>
+                    <button
+                      type='button'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormData((prev) => ({ ...prev, pdfUrl: '' }));
+                      }}
+                      className='text-red-500 hover:text-red-700'
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className='space-y-2'>
+                    <svg
+                      className='mx-auto h-12 w-12 text-gray-400'
+                      stroke='currentColor'
+                      fill='none'
+                      viewBox='0 0 48 48'
+                      aria-hidden='true'
+                    >
+                      <path
+                        d='M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02'
+                        strokeWidth={2}
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                    <div className='text-sm text-gray-600 dark:text-gray-400'>
+                      <span className='font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500'>
+                        Click to upload
+                      </span>{' '}
+                      or drag and drop
+                    </div>
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      PDF files up to 10MB
                     </p>
                   </div>
                 )}

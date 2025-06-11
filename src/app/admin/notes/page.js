@@ -13,7 +13,7 @@ const SkeletonNotesTable = () => (
       <table className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
         <thead className='bg-gray-50 dark:bg-gray-700'>
           <tr>
-            {[...Array(4)].map((_, i) => (
+            {[...Array(3)].map((_, i) => (
               <th key={i} className='px-6 py-3 text-left'>
                 <div className='h-4 bg-gray-300 dark:bg-gray-600 rounded w-24'></div>
               </th>
@@ -30,9 +30,6 @@ const SkeletonNotesTable = () => (
                     <div className='h-4 bg-gray-300 dark:bg-gray-600 rounded w-32'></div>
                   </div>
                 </div>
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <div className='h-4 bg-gray-300 dark:bg-gray-600 rounded w-16'></div>
               </td>
               <td className='px-6 py-4 whitespace-nowrap'>
                 <div className='h-4 bg-gray-300 dark:bg-gray-600 rounded w-24'></div>
@@ -84,35 +81,30 @@ export default function AdminNotes() {
         {
           _id: '1',
           title: 'Physics Notes Class 12',
-          price: 250,
           image: '/placeholder.jpg',
           createdAt: new Date().toISOString(),
         },
         {
           _id: '2',
           title: 'Chemistry Notes Class 12',
-          price: 180,
           image: '/placeholder.jpg',
           createdAt: new Date().toISOString(),
         },
         {
           _id: '3',
           title: 'Biology Notes Class 12',
-          price: 200,
           image: '/placeholder.jpg',
           createdAt: new Date().toISOString(),
         },
         {
           _id: '4',
           title: 'Mathematics Notes Class 12',
-          price: 220,
           image: '/placeholder.jpg',
           createdAt: new Date().toISOString(),
         },
         {
           _id: '5',
           title: 'English Notes Class 12',
-          price: 150,
           image: '/placeholder.jpg',
           createdAt: new Date().toISOString(),
         },
@@ -261,12 +253,6 @@ export default function AdminNotes() {
                   scope='col'
                   className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'
                 >
-                  Price
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'
-                >
                   Created
                 </th>
                 <th
@@ -297,11 +283,6 @@ export default function AdminNotes() {
                           {note.title}
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    <div className='text-sm text-gray-900 dark:text-white'>
-                      ₹{note.price}
                     </div>
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap'>
